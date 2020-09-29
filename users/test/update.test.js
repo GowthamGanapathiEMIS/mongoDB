@@ -4,7 +4,7 @@ const User = require("../src/user");
 describe("update", () => {
   let gowthu;
   beforeEach((done) => {
-    gowthu = new User({ name: "first" });
+    gowthu = new User({ name: "first", likes: 1 });
     gowthu.save().then(() => done());
   });
   repetetive = (action, done) => {
@@ -38,5 +38,14 @@ describe("update", () => {
 
   it("find using Id and update", (done) => {
     repetetive(User.findByIdAndUpdate(gowthu._id, { name: "second" }), done);
+  });
+
+  it("increment the count by 1", (done) => {
+    User.updateOne({ name: "first" }, { $inc: { likes: 10 } })
+    .then(()=>User.findOne({name:"first"}))
+    .then((user) => {
+      assert(user.likes === 11);
+      done();
+    });
   });
 });

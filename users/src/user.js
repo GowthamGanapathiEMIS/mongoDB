@@ -13,6 +13,12 @@ const UserSchema = new Schema(
       required: [true, "Name is missing."],
     },
     posts: [PostSchema],
+    blogposts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "blogPost",
+      },
+    ],
     likes: Number,
   },
   { collection: "user" }
@@ -20,6 +26,11 @@ const UserSchema = new Schema(
 
 UserSchema.virtual("postCount").get(function () {
   return this.posts.length;
+});
+
+UserSchema.pre("remove", function (next) {
+  const BlogPost = mongoose.model("blogPost");
+  BlogPost.remove({ _id: { $in: this.blogposts } }).then(() => next());
 });
 
 const User = mongoose.model("user", UserSchema);
